@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AuraDraw | Canvas Editor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  
+  <!-- Asosiy dizaynlar style.css faylida joylashgan -->
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+
+<body>
+  <main class="app">
+    <header class="topbar glass">
+      <div class="top_cont">
+        <div class="brand">
+          <div class="logo"><i class="bi bi-bezier2"></i></div>
+          <div>
+            <h1>AuraDraw</h1>
+            <p>Canvas Editor — Paint style tools, layers, select, transform</p>
+          </div>
+        </div>
+        <div class="actions topbar-actions-wrap">
+          <div class="top-actions-group two-line-actions" aria-label="Top action buttons">
+            <div class="actions-row actions-row-primary" aria-label="Main actions">
+              <button class="btn btn-soft btn-icon" id="undoBtn" title="Undo · Ctrl+Z"><i
+                  class="bi bi-arrow-counterclockwise"></i></button>
+              <button class="btn btn-soft btn-icon" id="redoBtn" title="Redo · Ctrl+Y"><i
+                  class="bi bi-arrow-clockwise"></i></button>
+              <button class="btn btn-soft" id="saveBtn"><i class="bi bi-save2"></i> Save</button>
+              <button class="btn btn-soft" id="loadBtn"><i class="bi bi-folder2-open"></i> Load</button>
+              <button class="btn btn-soft btn-icon" id="printBtn" title="Print"><i class="bi bi-printer"></i></button>
+            </div>
+  
+            <div class="actions-row actions-row-secondary" aria-label="Extra actions">
+              <button class="btn btn-soft btn-icon" id="guideBtn" title="Yo‘riqnoma"><i
+                  class="bi bi-question-circle"></i></button>
+              <!-- About tugmasi: kichik icon, hover tooltip va off-canvas kontakt panelini ochadi -->
+              <button class="btn btn-soft btn-icon about-action-btn" id="aboutBtn" type="button" aria-label="About" data-tooltip="About">
+                <i class="bi bi-person-lines-fill"></i>
+              </button>
+              <button class="btn btn-soft btn-icon" id="darkModeBtn" title="Dark mode"><i
+                  class="bi bi-moon-stars"></i></button>
+              <button class="btn btn-dangerx btn-icon" id="clearBtn"
+                title="Selection bo‘lsa faqat selectionni o‘chirish"><i class="bi bi-trash3"></i></button>
+              <button class="btn btn-darkx" id="exportPngBtn"><i class="bi bi-download"></i> PNG</button>
+              <button class="btn btn-soft" id="exportJpgBtn">JPG</button>
+            </div>
+          </div>
+          <div class="top-paint-colors paint-strip" id="topPaintColors" aria-label="Paint color palette">
+            <button class="paint-strip-primary active" id="topColorOneCard" type="button" title="Color 1 — Stroke">
+              <span id="topColorOnePreview"></span>
+              <b>Color 1</b>
+            </button>
+  
+            <button class="paint-strip-secondary" id="topColorTwoCard" type="button" title="Color 2 — Fill">
+              <span id="topColorTwoPreview"></span>
+              <b>Color 2</b>
+            </button>
+  
+            <div class="paint-strip-palette-wrap">
+              <div class="top-palette" id="topPaintPalette"></div>
+              <small>Colors</small>
+            </div>
+  
+            <label class="paint-strip-edit" title="Edit colors">
+              <input type="color" id="topPaintCustomColor" value="#2563eb" />
+              <span></span>
+              <b>Edit<br>colors</b>
+            </label>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <aside class="rail glass" id="toolRail">
+        <button class="tool-btn active" data-tool="brush" title="Brush · B"><i class="bi bi-pencil"></i></button>
+        <button class="tool-btn" data-tool="pencil" title="Pencil · P"><i class="bi bi-pencil-square"></i></button>
+        <button class="tool-btn" data-tool="marker" title="Marker · H"><i class="bi bi-highlighter"></i></button>
+        <button class="tool-btn" data-tool="spray" title="Spray · S"><i class="bi bi-cloud-fog2"></i></button>
+        <button class="tool-btn" data-tool="eraser" title="Eraser · E"><i class="bi bi-eraser"></i></button>
+        <button class="tool-btn" data-tool="move" title="Move layer / selection · M"><i
+            class="bi bi-arrows-move"></i></button>
+        <button class="tool-btn" data-tool="selectrect" title="Rectangle Select"><svg viewBox="0 0 24 24">
+            <rect x="5" y="5" width="14" height="14" rx="1" stroke-dasharray="3 2" />
+          </svg></button>
+        <button class="tool-btn" data-tool="selectfree" title="Freeform Select"><svg viewBox="0 0 24 24">
+            <path d="M5 12c0-4 3-7 7-7 3 0 7 2 7 6 0 5-5 8-10 7-3-.5-5-2.5-4-6z" stroke-dasharray="3 2" />
+          </svg></button>
+
+        <div class="separator"></div>
+
+        <button class="tool-btn" data-tool="line" title="Line · L"><svg viewBox="0 0 24 24">
+            <path d="M4 20L20 4" />
+          </svg></button>
+        <button class="tool-btn" data-tool="curve" title="Curve"><svg viewBox="0 0 24 24">
+            <path d="M4 18C8 3 16 21 20 6" />
+          </svg></button>
+        <button class="tool-btn" data-tool="circle" title="Oval · C"><svg viewBox="0 0 24 24">
+            <ellipse cx="12" cy="12" rx="7" ry="8" />
+          </svg></button>
+        <button class="tool-btn" data-tool="rect" title="Rectangle · R"><svg viewBox="0 0 24 24">
+            <rect x="5" y="6" width="14" height="12" />
+          </svg></button>
+        <button class="tool-btn" data-tool="roundrect" title="Rounded rectangle"><svg viewBox="0 0 24 24">
+            <rect x="5" y="6" width="14" height="12" rx="3" />
+          </svg></button>
+        <button class="tool-btn" data-tool="parallelogram" title="Parallelogram"><svg viewBox="0 0 24 24">
+            <path d="M8 5h12l-4 14H4z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="triangle" title="Triangle"><svg viewBox="0 0 24 24">
+            <path d="M12 4l9 16H3z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="righttriangle" title="Right triangle"><svg viewBox="0 0 24 24">
+            <path d="M5 4v16h15z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="diamond" title="Diamond"><svg viewBox="0 0 24 24">
+            <path d="M12 3l9 9-9 9-9-9z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="pentagon" title="Pentagon"><svg viewBox="0 0 24 24">
+            <path d="M12 3l8 6-3 11H7L4 9z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="hexagon" title="Hexagon"><svg viewBox="0 0 24 24">
+            <path d="M8 4h8l5 8-5 8H8l-5-8z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="rarrow" title="Right arrow"><svg viewBox="0 0 24 24">
+            <path d="M3 9h11V5l7 7-7 7v-4H3z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="larrow" title="Left arrow"><svg viewBox="0 0 24 24">
+            <path d="M21 9H10V5l-7 7 7 7v-4h11z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="uarrow" title="Up arrow"><svg viewBox="0 0 24 24">
+            <path d="M9 21V10H5l7-7 7 7h-4v11z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="darrow" title="Down arrow"><svg viewBox="0 0 24 24">
+            <path d="M9 3v11H5l7 7 7-7h-4V3z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="spark4" title="4 point star"><svg viewBox="0 0 24 24">
+            <path d="M12 2l2.3 7.7L22 12l-7.7 2.3L12 22l-2.3-7.7L2 12l7.7-2.3z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="star" title="Star"><svg viewBox="0 0 24 24">
+            <path d="M12 3l2.5 5.3 5.8.8-4.2 4.1 1 5.8-5.1-2.8L6.9 19l1-5.8-4.2-4.1 5.8-.8z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="burst" title="Burst"><svg viewBox="0 0 24 24">
+            <path d="M12 2l2 5 5-3-2 5 5 1-5 2 3 5-5-2-3 5-1-5-6 2 4-5-6-2 6-1-2-5 5 3z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="cloud" title="Cloud"><svg viewBox="0 0 24 24">
+            <path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11-1.5A4.8 4.8 0 0 0 7 18z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="bubble" title="Speech bubble"><svg viewBox="0 0 24 24">
+            <path d="M5 6h14v10H9l-5 4 1-4z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="heart" title="Heart"><svg viewBox="0 0 24 24">
+            <path d="M12 20S4 15 4 9a4 4 0 0 1 7-2.6A4 4 0 0 1 18 9c0 6-6 11-6 11z" />
+          </svg></button>
+        <button class="tool-btn" data-tool="freeform" title="Freeform shape"><svg viewBox="0 0 24 24">
+            <path d="M5 18l4-10 4 4 3-7 3 13z" />
+          </svg></button>
+
+        <div class="separator"></div>
+
+        <button class="tool-btn" data-tool="text" title="Text · T"><i class="bi bi-fonts"></i></button>
+        <button class="tool-btn" data-tool="bucket" title="Bucket fill"><i class="bi bi-paint-bucket"></i></button>
+        <button class="tool-btn" data-tool="picker" title="Color picker"><i class="bi bi-eyedropper"></i></button>
+        <button class="tool-btn" id="panelToggleBtn" title="Controls"><i class="bi bi-sliders2-vertical"></i></button>
+        <button class="tool-btn" id="selectAllBtn" title="Select all · Ctrl+A"><svg viewBox="0 0 24 24">
+            <rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="3 2" />
+            <path d="M8 8h8v8H8z" />
+          </svg></button>
+        <button class="tool-btn" id="copyPngBtn" title="Copy PNG"><i class="bi bi-clipboard-check"></i></button>
+        <div class="separator transform-separator"></div>
+        <button class="tool-btn transform-tool" id="rotateRightBtn" title="Rotate 90° right"><i
+            class="bi bi-arrow-clockwise"></i></button>
+        <button class="tool-btn transform-tool" id="rotateLeftBtn" title="Rotate 90° left"><i
+            class="bi bi-arrow-counterclockwise"></i></button>
+        <button class="tool-btn transform-tool" id="rotate180Btn" title="Rotate 180°"><i
+            class="bi bi-arrow-repeat"></i></button>
+        <button class="tool-btn transform-tool" id="mirrorYBtn" title="Flip vertical"><i
+            class="bi bi-symmetry-vertical"></i></button>
+        <button class="tool-btn transform-tool" id="mirrorXBtn" title="Flip horizontal"><i
+            class="bi bi-symmetry-horizontal"></i></button>
+      </aside>
+
+      <section class="stage glass" id="dropZone">
+        <div class="stage-head">
+          <div class="meta">
+            <span class="pill"><i class="bi bi-cursor"></i><b id="toolStatus">Brush</b></span>
+            <span class="pill"><i class="bi bi-aspect-ratio"></i><b id="sizeStatus">760 × 460</b></span>
+            <span class="pill"><i class="bi bi-search"></i><b id="zoomStatus">100%</b></span>
+            <span class="pill"><i class="bi bi-layers"></i><b id="layerStatus">Layer 1</b></span>
+          </div>
+          <button class="btn btn-soft d-lg-none btn-icon" id="openPanelBtn"><i class="bi bi-sliders"></i></button>
+        </div>
+
+        <div class="canvas-stage" id="canvasStage">
+          <div class="stroke-dock">
+            <div class="mini-control" title="Chiziq qalinligi">
+              <i class="bi bi-text-left"></i>
+              <input id="railBrushSize" type="range" min="1" max="90" value="8" aria-label="Chiziq qalinligi">
+              <span id="railBrushSizeValue">8</span>
+            </div>
+            <div class="mini-control" title="Shaffoflik">
+              <i class="bi bi-droplet-half"></i>
+              <input id="railOpacity" type="range" min="5" max="100" value="100" aria-label="Shaffoflik">
+              <span id="railOpacityValue">100</span>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <div class="stack" id="canvasStack">
+              <canvas id="previewCanvas"></canvas>
+
+              <button class="layer-resize-handle corner tl" data-layer-resize="tl" type="button"
+                title="Resize top-left"></button>
+              <button class="layer-resize-handle side t" data-layer-resize="t" type="button"
+                title="Resize top"></button>
+              <button class="layer-resize-handle corner tr" data-layer-resize="tr" type="button"
+                title="Resize top-right"></button>
+              <button class="layer-resize-handle side r" data-layer-resize="r" type="button"
+                title="Resize right"></button>
+              <button class="layer-resize-handle corner br" data-layer-resize="br" type="button"
+                title="Resize bottom-right"></button>
+              <button class="layer-resize-handle side b" data-layer-resize="b" type="button"
+                title="Resize bottom"></button>
+              <button class="layer-resize-handle corner bl" data-layer-resize="bl" type="button"
+                title="Resize bottom-left"></button>
+              <button class="layer-resize-handle side l" data-layer-resize="l" type="button"
+                title="Resize left"></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="layer-tabs" id="canvasLayerTabs">
+          <button class="layer-nav" id="layerPrevBtn"><i class="bi bi-chevron-left"></i></button>
+          <button class="sheet-add" id="quickAddLayerBtn" type="button" title="Yangi toza layer"><i
+              class="bi bi-plus-lg"></i></button>
+          <div class="layer-tools">
+            <button class="btn btn-soft btn-icon" id="zoomOutBtn"><i class="bi bi-dash-lg"></i></button>
+            <button class="btn btn-soft" id="fitBtn">Fit</button>
+            <button class="btn btn-soft btn-icon" id="zoomInBtn"><i class="bi bi-plus-lg"></i></button>
+          </div>
+          <button class="layer-nav" id="layerNextBtn"><i class="bi bi-chevron-right"></i></button>
+        </div>
+      </section>
+    </section>
+
+    <div class="panel-backdrop" id="panelBackdrop"></div>
+
+    <aside class="panel glass" id="settingsPanel">
+      <div class="panel-head">
+        <div>
+          <h2>Controls</h2>
+          <p id="activeToolText">Active tool: Brush</p>
+        </div><button class="btn btn-soft btn-icon" id="closePanelBtn"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="tabs"><button class="tab-btn active" data-tab="draw">Draw</button><button class="tab-btn"
+          data-tab="canvas">Canvas</button><button class="tab-btn" data-tab="layers">Layers</button></div>
+
+      <div class="tab-content active" id="tab-draw">
+        <div class="control">
+          <div class="row g-2">
+            <div class="col-6"><label class="label">Stroke</label><input class="form-control form-control-color w-100"
+                type="color" id="strokeColor" value="#111827"></div>
+            <div class="col-6"><label class="label">Fill</label><input class="form-control form-control-color w-100"
+                type="color" id="fillColor" value="#2563eb"></div>
+          </div>
+        </div>
+        <div class="control"><label class="label">Palette</label>
+          <div class="swatches" id="swatches"></div>
+        </div>
+        <div class="control">
+          <div class="d-flex justify-content-between"><label class="label mb-0">Size</label><span class="value"
+              id="brushSizeValue">8px</span></div>
+          <input class="form-range" id="brushSize" type="range" min="1" max="90" value="8">
+          <div class="d-flex justify-content-between mt-2"><label class="label mb-0">Opacity</label><span class="value"
+              id="opacityValue">100%</span></div>
+          <input class="form-range" id="opacity" type="range" min="5" max="100" value="100">
+          <div class="d-flex justify-content-between mt-2"><label class="label mb-0">Smooth</label><span class="value"
+              id="smoothingValue">55%</span></div>
+          <input class="form-range" id="smoothing" type="range" min="0" max="90" value="55">
+        </div>
+        <div class="control">
+          <div class="row g-2">
+            <div class="col-6"><label class="label">Line cap</label><select class="form-select" id="lineCap">
+                <option value="round">Round</option>
+                <option value="square">Square</option>
+                <option value="butt">Butt</option>
+              </select></div>
+            <div class="col-6"><label class="label">Shape</label><select class="form-select" id="shapeMode">
+                <option value="stroke">Stroke</option>
+                <option value="fill">Fill</option>
+                <option value="both">Both</option>
+              </select></div>
+          </div>
+        </div>
+        <div class="control"><label class="label">Select</label>
+          <div class="d-grid gap-2"><button class="btn btn-soft" id="selectRectPanelBtn"><i
+                class="bi bi-bounding-box"></i> Rectangle Select</button><button class="btn btn-soft"
+              id="selectFreePanelBtn"><i class="bi bi-vector-pen"></i> Free Select</button><button class="btn btn-soft"
+              id="selectAllPanelBtn"><i class="bi bi-ui-checks-grid"></i> Select All</button></div>
+        </div>
+        <div class="control"><label class="label">Text</label><input class="form-control mb-2" id="textValue"
+            value="AuraDraw">
+          <div class="row g-2">
+            <div class="col-5"><input class="form-control" id="fontSize" type="number" min="8" max="220" value="48">
+            </div>
+            <div class="col-7"><select class="form-select" id="fontFamily">
+                <option value="Inter, Arial">Inter</option>
+                <option value="Arial">Arial</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Impact">Impact</option>
+                <option value="Courier New">Courier</option>
+              </select></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-canvas">
+        <div class="control"><label class="label">Preset</label><select class="form-select" id="presetSelect">
+            <option value="760x460">Starter — 760 × 460</option>
+            <option value="1200x760">Workspace — 1200 × 760</option>
+            <option value="800x800">Square — 800 × 800</option>
+            <option value="1280x720">HD — 1280 × 720</option>
+            <option value="1920x1080">Full HD — 1920 × 1080</option>
+          </select></div>
+        <div class="control"><label class="label">Background</label><input class="form-control form-control-color w-100"
+            type="color" id="bgColor" value="#ffffff"></div>
+        <div class="control"><label class="label">Import image</label><input class="form-control" type="file"
+            accept="image/*" id="imageInput">
+          <p class="m-0 mt-2 small text-secondary">Drag & drop ham ishlaydi.</p>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-layers">
+        <div class="control">
+          <div class="d-flex gap-2"><button class="btn btn-darkx flex-fill" id="addLayerBtn"><i
+                class="bi bi-plus-lg"></i> New clean layer</button><button class="btn btn-soft flex-fill"
+              id="duplicateLayerBtn"><i class="bi bi-copy"></i> Layer nusxa</button></div>
+        </div>
+        <div class="control">
+          <div class="layer-list" id="layerList"></div>
+        </div>
+        <div class="control"><label class="label">Layer opacity</label>
+          <div class="d-flex justify-content-between"><span class="small text-secondary">Active layer</span><span
+              class="value" id="layerOpacityValue">100%</span></div><input class="form-range" id="layerOpacity"
+            type="range" min="5" max="100" value="100">
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <div class="modalx" id="renameModal" aria-hidden="true">
+    <div class="modal-card glass">
+      <div class="modal-head">
+        <div>
+          <h3>Layer sozlamalari</h3>
+          <p>Layer nomini real vaqtda o‘zgartiring.</p>
+        </div><button class="btn btn-soft btn-icon" id="renameCloseBtn"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <input class="form-control mb-3" id="renameLayerInput" placeholder="Layer nomi">
+      <div class="d-flex justify-content-end gap-2"><button class="btn btn-soft"
+          id="renameCancelBtn">Bekor</button><button class="btn btn-darkx" id="renameSaveBtn">Saqlash</button></div>
+    </div>
+  </div>
+
+  <div class="modalx" id="confirmModal" aria-hidden="true">
+    <div class="modal-card glass">
+      <div class="modal-head">
+        <div>
+          <h3 id="confirmTitle">O‘chirishni tasdiqlang</h3>
+          <p id="confirmText">Haqiqatan ham o‘chirmoqchimisiz?</p>
+        </div>
+        <button class="btn btn-soft btn-icon" id="confirmCloseBtn" type="button"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-soft" id="confirmNoBtn" type="button">Yo‘q</button>
+        <button class="btn btn-dangerx" id="confirmYesBtn" type="button"><i class="bi bi-trash3"></i> Ha,
+          o‘chirish</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- About off-canvas: dasturchi rasmi va aloqa ma’lumotlari shu panelda chiqadi -->
+  <div class="about-backdrop" id="aboutBackdrop" aria-hidden="true"></div>
+  <aside class="about-offcanvas" id="aboutOffcanvas" aria-hidden="true" aria-label="Dasturchi bilan bog‘lanish">
+    <div class="about-offcanvas-head">
+      <h2>Dasturchi bilan bog‘lanish</h2>
+      <button class="about-close-btn" id="aboutCloseBtn" type="button" aria-label="Yopish">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="about-profile-photo-wrap">
+      <!-- Siz yuborgan rasm alohida fayl sifatida developer-photo.jpg nomi bilan joylandi -->
+      <img src="./image/developer-photo.jpg" alt="Akmaljon Yusufov rasmi" class="about-profile-photo" />
+    </div>
+
+    <div class="about-contact-list">
+      <p><i class="bi bi-person-circle"></i> <b>Ism va familiya:</b> <span>Akmaljon Yusufov</span></p>
+      <p><i class="bi bi-telephone-fill"></i> <b>Telefon:</b> <a href="tel:+998885700209">+998-(88)-570-02-09</a></p>
+      <p><i class="bi bi-telegram"></i> <b>Telegram:</b> <a href="https://t.me/AkmaljonYusupov" target="_blank" rel="noopener">@AkmaljonYusupov</a></p>
+      <p><i class="bi bi-telegram"></i> <b>Telegram kanal:</b> <a href="https://t.me/coder_ac" target="_blank" rel="noopener">@coder_ac</a></p>
+      <p><i class="bi bi-instagram"></i> <b>Instagram:</b> <a href="https://instagram.com/coder.ac" target="_blank" rel="noopener">@coder.ac</a></p>
+    </div>
+
+    <div class="about-clock" id="aboutClock">00:00:00</div>
+
+    <div class="about-info-card">
+      <h3><i class="bi bi-mailbox2"></i> Aloqa uchun</h3>
+      <p>Dasturchi bilan bog‘lanish uchun yuqoridagi <a href="https://t.me/AkmaljonYusupov" target="_blank" rel="noopener">Telegram</a>, <a href="https://instagram.com/coder.ac" target="_blank" rel="noopener">Instagram</a> va boshqa ijtimoiy tarmoqlardagi rasmiy sahifalar orqali aloqaga chiqishingiz mumkin.</p>
+      <p>Shuningdek, <a href="https://t.me/coder_ac" target="_blank" rel="noopener">Telegram kanalimiz</a> orqali portfoliodagi loyihalarni kuzatib borishingiz va yangiliklardan muntazam xabardor bo‘lishingiz mumkin.</p>
+    </div>
+  </aside>
+
+  <div class="modalx" id="guideModal" aria-hidden="true">
+    <div class="modal-card glass guide-card" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <div>
+          <h3>AuraDraw yo‘riqnomasi</h3>
+          <p>Chizish, layer, selection, rasm import, text va export bo‘yicha universal qo‘llanma.</p>
+        </div>
+        <button class="btn btn-soft btn-icon" id="guideCloseBtn" type="button"><i class="bi bi-x-lg"></i></button>
+      </div>
+
+      <div class="guide-section-title">Asosiy boshqaruv</div>
+      <div class="guide-grid">
+        <div><b>Brush / Pencil / Marker</b><span>Erkin chizish. Shift + sichqoncha g‘ildiragi — qalinlikni
+            o‘zgartirish.</span></div>
+        <div><b>Opacity</b><span>Alt + g‘ildirak — shaffoflikni o‘zgartirish. O‘ngdagi vertikal range ham
+            ishlaydi.</span></div>
+        <div><b>Zoom</b><span>Ctrl + g‘ildirak — canvasni yaqinlashtirish yoki uzoqlashtirish.</span></div>
+        <div><b>Shapes</b><span>Shakl chizing, keyin 4 burchak va 4 tomondan resize/rotate qiling.</span></div>
+        <div><b>Text T</b><span>Canvasga bosing, Paint kabi text-box ochiladi. Ctrl+Enter — canvasga joylash.</span>
+        </div>
+        <div><b>Bucket / Picker</b><span>Bucket rang bilan to‘ldiradi, Picker canvasdan rang olib beradi.</span></div>
+      </div>
+
+      <div class="guide-section-title">Layer va selection</div>
+      <div class="guide-grid">
+        <div><b>Yangi toza layer</b><span>Layer+ tugmasi har safar bo‘sh, toza layer yaratadi. Oldingi layer
+            nusxalanmaydi.</span></div>
+        <div><b>Layer nusxa</b><span>Copy tugmasi active layerdan nusxa olish uchun. Nom avtomatik “copy”
+            bo‘ladi.</span></div>
+        <div><b>Layer nomi</b><span>Layer panelidagi qalam iconi orqali nomni o‘zgartiring.</span></div>
+        <div><b>Rectangle Select</b><span>Tanlangan to‘rtburchak ichidagi chizma alohida selection bo‘ladi.</span></div>
+        <div><b>Free Select</b><span>Erkin chizilgan hudud ichidagi rasm ajratiladi.</span></div>
+        <div><b>Delete</b><span>Selection bor bo‘lsa faqat tanlangan qism modal tasdiq bilan o‘chadi.</span></div>
+      </div>
+
+      <div class="guide-section-title">Rasm, crop va export</div>
+      <div class="guide-grid">
+        <div><b>Import image</b><span>Rasm import bo‘lsa, move/resize/rotate qilinadigan selection sifatida
+            chiqadi.</span></div>
+        <div><b>Crop</b><span>Ctrl + Shift + X — tanlangan selection bo‘yicha canvasni kesadi.</span></div>
+        <div><b>Export</b><span>PNG/JPG tugmalari orqali active layer/canvasni yuklab oling.</span></div>
+        <div><b>Save / Load</b><span>LocalStorage orqali loyihani saqlash va qayta yuklash mumkin.</span></div>
+        <div><b>Print</b><span>Printer iconi active canvasni chop etishga tayyorlaydi.</span></div>
+        <div><b>Dark / Light</b><span>Oy/quyosh tugmasi orqali mavzuni almashtiring.</span></div>
+      </div>
+
+      <div class="guide-section-title">About — men haqimda</div>
+      <div class="about-wrap">
+        <div class="about-card">
+          <span class="about-badge"><i class="bi bi-person-badge"></i> Creator</span>
+          <b>Akmaljon Yusufov</b>
+          <span>Frontend dasturchi sifatida zamonaviy, minimalistik va premium UI/UX yechimlar yaratishga e’tibor
+            beraman. AuraDraw loyihasi canvas, layer, responsive interfeys, Paint uslubidagi selection va transform
+            imkoniyatlarini birlashtirish uchun ishlab chiqildi.</span>
+        </div>
+        <div class="about-list">
+          <div class="about-card"><b>Yo‘nalish</b><span>HTML, CSS, JavaScript, Bootstrap, Canvas API, responsive
+              UI.</span></div>
+          <div class="about-card"><b>Maqsad</b><span>Oddiy, tez, minimal va kuchli chizish editori yaratish.</span>
+          </div>
+          <div class="about-card"><b>Dizayn talabi</b><span>Light/Dark mode, mobile-first, toza panel, aniq
+              iconlar.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="toastx" id="toast"></div>
+
+  
+  <!-- Barcha interaktiv canvas funksiyalari script.js faylida -->
+  <script src="./js/script.js"></script>
+</body>
+
+</html>
