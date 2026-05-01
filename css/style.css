@@ -2085,7 +2085,7 @@ body.dark {
       }
 
       #exportJpgBtn::after {
-        content: "JPG";
+        content: " ";
         font-size: 11px !important;
         font-weight: 950 !important;
         color: currentColor !important
@@ -4337,5 +4337,211 @@ body.dark .about-info-card {
 
   .about-clock {
     font-size: 34px;
+  }
+}
+
+
+/* ===== FINAL STRICT FIX: About off-canvas photo size =====
+   Talab: developer-photo.jpg kichik bo‘lsin va border-radius qo‘yilsin. */
+.about-offcanvas .about-profile-photo {
+  width: 132px !important;
+  height: 132px !important;
+  max-width: 132px !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  object-position: top center !important;
+  border-radius: 22px !important;
+}
+
+@media (max-width: 520px) {
+  .about-offcanvas .about-profile-photo {
+    width: 108px !important;
+    height: 108px !important;
+    max-width: 108px !important;
+    border-radius: 18px !important;
+  }
+}
+
+/* Loading  */
+.app-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(37, 99, 235, .22), transparent 34%),
+    radial-gradient(circle at 85% 18%, rgba(14, 165, 233, .18), transparent 32%),
+    var(--bg);
+  transition: opacity .55s ease, visibility .55s ease;
+}
+
+.app-loader.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, .12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, .12) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(circle, #000 35%, transparent 72%);
+  animation: loaderGridMove 3.8s linear infinite;
+}
+
+.loader-card {
+  position: relative;
+  width: min(360px, calc(100vw - 38px));
+  padding: 30px 24px 24px;
+  border-radius: 30px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(22px);
+  text-align: center;
+}
+
+.loader-logo {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 26px;
+  background:
+    conic-gradient(from 0deg, #2563eb, #0ea5e9, #22c55e, #2563eb);
+  color: #fff;
+  font-size: 36px;
+  animation: logoSpin 2.4s linear infinite;
+  box-shadow: 0 20px 45px rgba(37, 99, 235, .28);
+}
+
+.loader-logo i {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border-radius: 21px;
+  background: linear-gradient(135deg, #0f172a, #2563eb);
+}
+
+.loader-card h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 950;
+  letter-spacing: -.045em;
+  background: linear-gradient(90deg, var(--text), var(--blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.loader-card p {
+  margin: 7px 0 18px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.loader-stroke {
+  height: 36px;
+  position: relative;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.loader-stroke span {
+  position: absolute;
+  left: 12%;
+  top: 18px;
+  width: 76%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #2563eb, #0ea5e9, transparent);
+  animation: drawStroke 1.4s ease-in-out infinite;
+}
+
+.loader-stroke::after {
+  content: "\F4CB";
+  font-family: "bootstrap-icons";
+  position: absolute;
+  top: 3px;
+  left: 8%;
+  font-size: 22px;
+  color: var(--blue);
+  animation: brushMove 1.4s ease-in-out infinite;
+}
+
+.loader-progress {
+  height: 9px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(148, 163, 184, .24);
+}
+
+.loader-progress-bar {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #0ea5e9);
+  transition: width .18s ease;
+}
+
+#loaderPercent {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--sky);
+  font-size: 13px;
+  font-weight: 950;
+}
+
+@keyframes logoSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loaderGridMove {
+  to {
+    background-position: 34px 34px;
+  }
+}
+
+@keyframes drawStroke {
+  0% {
+    transform: scaleX(.05);
+    opacity: .2;
+  }
+
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scaleX(.05);
+    opacity: .2;
+  }
+}
+
+@keyframes brushMove {
+  0% {
+    left: 8%;
+    transform: rotate(-18deg);
+  }
+
+  50% {
+    left: 82%;
+    transform: rotate(14deg);
+  }
+
+  100% {
+    left: 8%;
+    transform: rotate(-18deg);
   }
 }
